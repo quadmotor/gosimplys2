@@ -5,12 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 	"log"
 	// "net/http/pprof"
 	"runtime/pprof"
 
-	"github.com/quadmotor/gosimplys2"
+	gosimplys2 "github.com/quadmotor/gosimplys2"
 )
 
 func runTetra() {
@@ -32,23 +31,19 @@ func runTetra() {
 	nt := len(tris) / 3
 
 	msh := gosimplys2.Mesh{}
-	msh.vertices = make([]gosimplys2.Vertex, nn)
-	msh.triangles = make([]gosimplys2.Triangle, nt)
+	msh.Vertices = make([]gosimplys2.Vertex, nn)
+	msh.Triangles = make([]gosimplys2.Triangle, nt)
 	for i := 0; i < nn; i++ {
-		msh.vertices[i].p[0] = vs[i*3+0]
-		msh.vertices[i].p[1] = vs[i*3+1]
-		msh.vertices[i].p[2] = vs[i*3+2]
+		msh.SetVertex(i, vs[i*3+0], vs[i*3+1], vs[i*3+2])
 	}
 
 	for i := 0; i < nt; i++ {
-		msh.triangles[i].v[0] = tris[i*3+0]
-		msh.triangles[i].v[1] = tris[i*3+1]
-		msh.triangles[i].v[2] = tris[i*3+2]
+		msh.SetTriangle(i, tris[i*3+0], tris[i*3+1], tris[i*3+2])
 	}
 
-	msh.writeObj("input.obj")
-	msh.simplify_gosimplys.Mesh(3, 7.0)
-	msh.writeObj("output.obj")
+	msh.WriteObj("input.obj")
+	msh.Simplify(3, 7.0)
+	msh.WriteObj("output.obj")
 }
 
 
@@ -85,5 +80,5 @@ func main() {
 		return
 	}
 
-	gosimplys2.runObj(input, output, target)
+	gosimplys2.RunObj(input, output, target)
 }

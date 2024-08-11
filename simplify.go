@@ -28,17 +28,17 @@ type Ref struct {
 }
 
 type Mesh struct {
-	vertices  []Vertex
-	triangles []Triangle
+	Vertices  []Vertex
+	Triangles []Triangle
 	refs      []Ref
 }
 
 func (msh *Mesh) calculate_error(id_v1 int, id_v2 int) float64 {
-	q := symAdd(&msh.vertices[id_v1].q, &msh.vertices[id_v2].q)
-	// border := msh.vertices[id_v1].border && msh.vertices[id_v2].border;
-	x := msh.vertices[id_v2].p[0]
-	y := msh.vertices[id_v2].p[1]
-	z := msh.vertices[id_v2].p[2]
+	q := symAdd(&msh.Vertices[id_v1].q, &msh.Vertices[id_v2].q)
+	// border := msh.Vertices[id_v1].border && msh.Vertices[id_v2].border;
+	x := msh.Vertices[id_v2].p[0]
+	y := msh.Vertices[id_v2].p[1]
+	z := msh.Vertices[id_v2].p[2]
 	return vertex_error(&q, x, y, z)
 }
 
@@ -47,7 +47,7 @@ func (msh *Mesh) calculate_error(id_v1 int, id_v2 int) float64 {
 func (msh *Mesh) flipped(p vec3f, i0 int, i1 int, v0 *Vertex, v1 *Vertex, deleted *[]int) bool {
 	bordercount := 0
 	for k := 0; k < v0.tcount; k++ {
-		t := &msh.triangles[msh.refs[v0.tstart+k].tid]
+		t := &msh.Triangles[msh.refs[v0.tstart+k].tid]
 		if t.deleted {
 			continue
 		}
@@ -61,9 +61,9 @@ func (msh *Mesh) flipped(p vec3f, i0 int, i1 int, v0 *Vertex, v1 *Vertex, delete
 			(*deleted)[k] = 1
 			continue
 		}
-		d1 := vec3fminus(&msh.vertices[id1].p, &p)
+		d1 := vec3fminus(&msh.Vertices[id1].p, &p)
 		vec3fnormalize(&d1)
-		d2 := vec3fminus(&msh.vertices[id2].p, &p)
+		d2 := vec3fminus(&msh.Vertices[id2].p, &p)
 		vec3fnormalize(&d2)
 		if math.Abs(vec3fdot(&d1, &d2)) > 0.999 {
 			return true
@@ -85,7 +85,7 @@ func (msh *Mesh) update_triangles(i0 int, v *Vertex, deleted *[]int, deleted_tri
 
 	for k := 0; k < v.tcount; k++ {
 		r := &msh.refs[v.tstart+k]
-		t := &msh.triangles[r.tid]
+		t := &msh.Triangles[r.tid]
 		if t.deleted {
 			continue
 		}
@@ -113,71 +113,71 @@ func resizeslice(refs *[]int, n3 int) {
 	}
 }
 
-func (msh *Mesh) writeObj(output string) {
+func (msh *Mesh) WriteObj(output string) {
 	f, _ := os.Create(output)
 	defer f.Close()
 
-	for i := 0; i < len(msh.vertices); i++ {
+	for i := 0; i < len(msh.Vertices); i++ {
 		fmt.Fprintf(f, "v %g %g %g\n",
-			msh.vertices[i].p[0], msh.vertices[i].p[1], msh.vertices[i].p[2])
+			msh.Vertices[i].p[0], msh.Vertices[i].p[1], msh.Vertices[i].p[2])
 	}
 
-	for i := 0; i < len(msh.triangles); i++ {
-		if !msh.triangles[i].deleted {
+	for i := 0; i < len(msh.Triangles); i++ {
+		if !msh.Triangles[i].deleted {
 			fmt.Fprintf(f, "f %d// %d// %d//\n",
-				msh.triangles[i].v[0]+1, msh.triangles[i].v[1]+1, msh.triangles[i].v[2]+1)
+				msh.Triangles[i].v[0]+1, msh.Triangles[i].v[1]+1, msh.Triangles[i].v[2]+1)
 		}
 	}
 }
 
-// compact triangles, compute edge error and build reference list
+// compact Triangles, compute edge error and build reference list
 
 func (msh *Mesh) update_mesh(iteration int) {
-	if iteration > 0 { // compact triangles
+	if iteration > 0 { // compact Triangles
 		dst := 0
-		for i := 0; i < len(msh.triangles); i++ {
-			if !msh.triangles[i].deleted {
-				msh.triangles[dst] = msh.triangles[i]
+		for i := 0; i < len(msh.Triangles); i++ {
+			if !msh.Triangles[i].deleted {
+				msh.Triangles[dst] = msh.Triangles[i]
 				dst++
 			}
 		}
-		msh.triangles = msh.triangles[:dst]
+		msh.Triangles = msh.Triangles[:dst]
 	}
 	//
 
 	// Init Reference ID list
-	// loopi(0,vertices.size())
-	for i := 0; i < len(msh.vertices); i++ {
-		msh.vertices[i].tstart = 0
-		msh.vertices[i].tcount = 0
+	// loopi(0,Vertices.size())
+	for i := 0; i < len(msh.Vertices); i++ {
+		msh.Vertices[i].tstart = 0
+		msh.Vertices[i].tcount = 0
 	}
-	// loopi(0,triangles.size()){
-	for i := 0; i < len(msh.triangles); i++ {
-		t := &msh.triangles[i]
+	// loopi(0,Triangles.size()){
+	for i := 0; i < len(msh.Triangles); i++ {
+		t := &msh.Triangles[i]
 		for j := 0; j < 3; j++ {
-			msh.vertices[t.v[j]].tcount++
+			msh.Vertices[t.v[j]].tcount++
 		}
 	}
 	tstart := 0
-	for i := 0; i < len(msh.vertices); i++ {
-		v := &msh.vertices[i]
+	for i := 0; i < len(msh.Vertices); i++ {
+		v := &msh.Vertices[i]
 		v.tstart = tstart
 		tstart += v.tcount
 		v.tcount = 0
 	}
 
 	// Write References
-	n3 := len(msh.triangles) * 3
+	n3 := len(msh.Triangles) * 3
 	if cap(msh.refs) > n3 {
 		msh.refs = msh.refs[:n3]
 	} else {
 		msh.refs = make([]Ref, n3)
 	}
 
-	for i := 0; i < len(msh.triangles); i++ {
-		t := &msh.triangles[i]
+	for i := 0; i < len(msh.Triangles); i++ {
+		t := &msh.Triangles[i]
 		for j := 0; j < 3; j++ {
-			v := &msh.vertices[t.v[j]]
+			v := &msh.Vertices[t.v[j]]
 			msh.refs[v.tstart+v.tcount].tid = i
 			msh.refs[v.tstart+v.tcount].tvertex = j
 			v.tcount++
@@ -191,22 +191,22 @@ func (msh *Mesh) update_mesh(iteration int) {
 	// but mostly improves the result for closed meshes
 	//
 	if iteration == 0 {
-		// Identify boundary : vertices[].border=0,1
+		// Identify boundary : Vertices[].border=0,1
 
 		vcount := []int{}
 		vids := []int{}
 
-		for i := 0; i < len(msh.vertices); i++ {
-			msh.vertices[i].border = false
+		for i := 0; i < len(msh.Vertices); i++ {
+			msh.Vertices[i].border = false
 		}
 
-		for i := 0; i < len(msh.vertices); i++ {
-			v := &msh.vertices[i]
+		for i := 0; i < len(msh.Vertices); i++ {
+			v := &msh.Vertices[i]
 			vcount = vcount[:0]
 			vids = vids[:0]
 			for j := 0; j < v.tcount; j++ {
 				k := msh.refs[v.tstart+j].tid
-				t := &msh.triangles[k]
+				t := &msh.Triangles[k]
 				for k := 0; k < 3; k++ {
 					ofs := 0
 					id := t.v[k]
@@ -230,22 +230,22 @@ func (msh *Mesh) update_mesh(iteration int) {
 			}
 			for j := 0; j < len(vcount); j++ {
 				if vcount[j] == 1 {
-					msh.vertices[vids[j]].border = true
+					msh.Vertices[vids[j]].border = true
 				}
 			}
 		}
 		//initialize errors
-		for i := 0; i < len(msh.vertices); i++ {
-			msh.vertices[i].q = SymetricMatrix{} //(0.0)
+		for i := 0; i < len(msh.Vertices); i++ {
+			msh.Vertices[i].q = SymetricMatrix{} //(0.0)
 		}
 
-		for i := 0; i < len(msh.triangles); i++ {
+		for i := 0; i < len(msh.Triangles); i++ {
 
-			t := &msh.triangles[i]
+			t := &msh.Triangles[i]
 			n := vec3f{}
 			p := [3]vec3f{}
 			for j := 0; j < 3; j++ {
-				p[j] = msh.vertices[t.v[j]].p
+				p[j] = msh.Vertices[t.v[j]].p
 			}
 
 			d01 := vec3fminus(&p[1], &p[0])
@@ -257,13 +257,13 @@ func (msh *Mesh) update_mesh(iteration int) {
 			dis := -vec3fdot(&n, &p[0])
 			q0 := planeToQuadric(n[0], n[1], n[2], dis)
 			for j := 0; j < 3; j++ {
-				msh.vertices[t.v[j]].q = symAdd(&msh.vertices[t.v[j]].q, &q0)
+				msh.Vertices[t.v[j]].q = symAdd(&msh.Vertices[t.v[j]].q, &q0)
 			}
 		}
 
-		for i := 0; i < len(msh.triangles); i++ {
+		for i := 0; i < len(msh.Triangles); i++ {
 			// Calc Edge Error
-			t := &msh.triangles[i]
+			t := &msh.Triangles[i]
 			// p := vec3f{}
 			for j := 0; j < 3; j++ {
 				t.err[j] = msh.calculate_error(t.v[j], t.v[(j+1)%3])
@@ -279,56 +279,68 @@ func (msh *Mesh) compact_mesh() {
 
 	dst := 0
 
-	for i := 0; i < len(msh.vertices); i++ {
-		msh.vertices[i].tcount = 0
+	for i := 0; i < len(msh.Vertices); i++ {
+		msh.Vertices[i].tcount = 0
 	}
 
-	for i := 0; i < len(msh.triangles); i++ {
-		if !msh.triangles[i].deleted {
-			t := &msh.triangles[i]
-			msh.triangles[dst] = *t
+	for i := 0; i < len(msh.Triangles); i++ {
+		if !msh.Triangles[i].deleted {
+			t := &msh.Triangles[i]
+			msh.Triangles[dst] = *t
 			dst++
 			for j := 0; j < 3; j++ {
-				msh.vertices[t.v[j]].tcount = 1
+				msh.Vertices[t.v[j]].tcount = 1
 			}
 		}
 	}
-	msh.triangles = msh.triangles[:dst]
+	msh.Triangles = msh.Triangles[:dst]
 	dst = 0
 
-	for i := 0; i < len(msh.vertices); i++ {
-		if msh.vertices[i].tcount > 0 {
-			msh.vertices[i].tstart = dst
-			msh.vertices[dst].p = msh.vertices[i].p
+	for i := 0; i < len(msh.Vertices); i++ {
+		if msh.Vertices[i].tcount > 0 {
+			msh.Vertices[i].tstart = dst
+			msh.Vertices[dst].p = msh.Vertices[i].p
 			dst++
 		}
 	}
 
-	for i := 0; i < len(msh.triangles); i++ {
-		t := &msh.triangles[i]
+	for i := 0; i < len(msh.Triangles); i++ {
+		t := &msh.Triangles[i]
 		for j := 0; j < 3; j++ {
-			t.v[j] = msh.vertices[t.v[j]].tstart
+			t.v[j] = msh.Vertices[t.v[j]].tstart
 		}
 	}
-	msh.vertices = msh.vertices[:dst]
+	msh.Vertices = msh.Vertices[:dst]
+}
+
+func (msh *Mesh) SetVertex(i int, x float64, y float64, z float64) {
+	msh.Vertices[i].p[0] = x
+	msh.Vertices[i].p[1] = y
+	msh.Vertices[i].p[2] = z
+}
+
+func (msh *Mesh) SetTriangle(i int, a int, b int, c int) {
+	msh.Triangles[i].v[0] = a
+	msh.Triangles[i].v[1] = b
+	msh.Triangles[i].v[2] = c
 }
 
 // Main simplification function
 //
-// target_count  : target nr. of triangles
+// target_count  : target nr. of Triangles
 // agressiveness : sharpness to increase the threshold.
 //
 //	5..8 are good numbers
 //	more iterations yield higher quality
 //
 // =7
-func (msh *Mesh) simplify_mesh(target_count int, agressiveness float64) {
+func (msh *Mesh) Simplify(target_count int, agressiveness float64) {
 	// init
 	// printf("%s - start\n",__FUNCTION__);
 	// int timeStart=timeGetTime();
 
-	for i := 0; i < len(msh.triangles); i++ {
-		msh.triangles[i].deleted = false
+	for i := 0; i < len(msh.Triangles); i++ {
+		msh.Triangles[i].deleted = false
 	}
 
 	// main iteration loop
@@ -336,12 +348,12 @@ func (msh *Mesh) simplify_mesh(target_count int, agressiveness float64) {
 	deleted_triangles := 0
 	deleted0 := []int{}
 	deleted1 := []int{}
-	triangle_count := len(msh.triangles)
+	triangle_count := len(msh.Triangles)
 
 	for iteration := 0; iteration < 100; iteration++ {
 
-		// target number of triangles reached ? Then break
-		// printf("iteration %d - triangles %d\n",iteration,triangle_count-deleted_triangles);
+		// target number of Triangles reached ? Then break
+		// printf("iteration %d - Triangles %d\n",iteration,triangle_count-deleted_triangles);
 		if triangle_count-deleted_triangles <= target_count {
 			break
 		}
@@ -352,20 +364,20 @@ func (msh *Mesh) simplify_mesh(target_count int, agressiveness float64) {
 		}
 
 		// clear dirty flag
-		for i := 0; i < len(msh.triangles); i++ {
-			msh.triangles[i].dirty = false
+		for i := 0; i < len(msh.Triangles); i++ {
+			msh.Triangles[i].dirty = false
 		}
 		//
-		// All triangles with edges below the threshold will be removed
+		// All Triangles with edges below the threshold will be removed
 		//
 		// The following numbers works well for most models.
 		// If it does not, try to adjust the 3 parameters
 		//
 		threshold := 0.000000001 * math.Pow(float64(iteration+3), agressiveness)
 
-		// remove vertices & mark deleted triangles
-		for i := 0; i < len(msh.triangles); i++ {
-			t := &msh.triangles[i]
+		// remove Vertices & mark deleted Triangles
+		for i := 0; i < len(msh.Triangles); i++ {
+			t := &msh.Triangles[i]
 			if t.err[3] > threshold {
 				continue
 			}
@@ -379,9 +391,9 @@ func (msh *Mesh) simplify_mesh(target_count int, agressiveness float64) {
 			for j := 0; j < 3; j++ {
 				if t.err[j] < threshold {
 					i0 := t.v[j]
-					v0 := &msh.vertices[i0]
+					v0 := &msh.Vertices[i0]
 					i1 := t.v[(j+1)%3]
-					v1 := &msh.vertices[i1]
+					v1 := &msh.Vertices[i1]
 
 					// Border check
 					if v0.border != v1.border {
