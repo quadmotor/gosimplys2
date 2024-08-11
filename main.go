@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"log"
+	// "net/http/pprof"
+	"runtime/pprof"
 
 	"github.com/udhos/gwob"
 )
@@ -100,9 +103,21 @@ func main() {
 	flag.StringVar(&output, "output", "result.obj", "output file path")
 	flag.IntVar(&target, "target", 2000, "target triangle count")
 
+	//https://go.dev/blog/pprof
+	var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 	flag.Parse()
 
 	fmt.Printf("input, output, target count %s %s %d\n", input, output, target)
+
+	if *cpuprofile != "" {
+        f, err := os.Create(*cpuprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
+    }
 
 	if _, err := os.Stat(input); errors.Is(err, os.ErrNotExist) {
 		fmt.Printf("input %s does not exist", input)
