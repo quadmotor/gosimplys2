@@ -1,4 +1,4 @@
-package main
+package gosimplys2
 
 // type SymetricMatrix struct {
 // 	m [10]float64

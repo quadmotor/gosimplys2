@@ -1,4 +1,4 @@
-package main
+package gosimplys2
 
 import (
 	"fmt"
