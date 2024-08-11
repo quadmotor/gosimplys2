@@ -1,6 +1,6 @@
 # Fast-Quadric-Mesh-Simplification
 
-as the original ![author](https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification/tree/master). the implementaton is fast and versatil.
+thanks for original [Sven FORSTMANN](https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification/tree/master). the implementaton is fast and versatil.
 * memory efficient,
 * free and for
 * high quality
