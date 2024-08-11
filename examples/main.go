@@ -33,7 +33,7 @@ func runTetra() {
 
 	msh := gosimplys2.Mesh{}
 	msh.vertices = make([]gosimplys2.Vertex, nn)
-	msh.gosimplys2.Triangles = make([]gosimplys2.Triangle, nt)
+	msh.triangles = make([]gosimplys2.Triangle, nt)
 	for i := 0; i < nn; i++ {
 		msh.vertices[i].p[0] = vs[i*3+0]
 		msh.vertices[i].p[1] = vs[i*3+1]
