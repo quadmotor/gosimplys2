@@ -5,6 +5,10 @@ thanks for original [Sven FORSTMANN](https://github.com/sp4cerat/Fast-Quadric-Me
 * free and for
 * high quality
 
+5000                       |  10000                    | 20000
+:-------------------------:|:-------------------------:|:-------------------------:
+![](wall5000.png00.png)    |  ![](wall10000.png01.png) | ![](wall20000.png02.png) 
+
 ## Compiling and Usage
 ```shell
 go build
