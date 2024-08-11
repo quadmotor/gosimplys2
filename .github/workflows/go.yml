@@ -22,9 +22,10 @@ jobs:
         go-version: '1.22'
 
     - name: Build
-      run: go get -u
-      run: go mod tidy
-      run: go build -v ./...
+      run: |
+        go get -u
+        go mod tidy
+        go build -v ./...
 
     - name: Test
       run: go test -v ./...
