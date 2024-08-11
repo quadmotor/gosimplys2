@@ -5,7 +5,7 @@ thanks for original [Sven FORSTMANN](https://github.com/sp4cerat/Fast-Quadric-Me
 * free and for
 * high quality
 
-5000                       |  10000                    | 20000
+5000 trias (692.6494ms)    |  10000 trias (769.2492ms) | 20000 trias (747.3038ms)
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](wall5000.png00.png)    |  ![](wall10000.png01.png) | ![](wall20000.png02.png) 
 
