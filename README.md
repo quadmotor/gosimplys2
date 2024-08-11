@@ -1,6 +1,6 @@
 # Fast-Quadric-Mesh-Simplification
 
-this go implementaton is fast and versatil. thanks for [Sven FORSTMANN](https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification/tree/master). 
+this go implementaton is fast and versatil. port from [Sven FORSTMANN](https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification/tree/master). 
 * memory efficient,
 * free and for
 * high quality
